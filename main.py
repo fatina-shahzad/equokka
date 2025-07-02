@@ -10,8 +10,6 @@ The application supports different logging levels based on the environment (deve
 import asyncio
 import logging
 import os
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.web.async_client import AsyncWebClient
 from bot.slack_bot import SlackBot
 from dotenv import load_dotenv
 
