@@ -15,6 +15,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Ensure AWS credentials are set in environment variables
+os.environ["AWS_ACCESS_KEY_ID"] = os.getenv("AWS_ACCESS_KEY_ID")
+os.environ["AWS_SECRET_ACCESS_KEY"] = os.getenv("AWS_SECRET_ACCESS_KEY")
+
 def configure_logging():
     """
     Configure the application's logging settings based on the environment.
@@ -72,6 +76,7 @@ async def main():
     # Initialize and run the bot
     bot = SlackBot(app_token=slack_app_token, bot_token=slack_bot_token)
     await bot.run()
+    bot.send_message(channel_id="C093L8DDMK7", text="Hello World!!")
 
 if __name__ == "__main__":
     configure_logging()
