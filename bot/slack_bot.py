@@ -52,7 +52,7 @@ class SlackBot:
         """
         self.app_token = app_token
         self.bot_token = bot_token
-        self.web_client = AsyncWebClient(token=bot_token)
+        self.web_client = AsyncWebClient(token=bot_token, timeout=60)
         self.socket_client = SocketModeClient(
             app_token=app_token,
             web_client=self.web_client
