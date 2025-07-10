@@ -15,6 +15,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Ensure AWS credentials are set in environment variables
+os.environ["AWS_ACCESS_KEY_ID"] = os.getenv("AWS_ACCESS_KEY_ID")
+os.environ["AWS_SECRET_ACCESS_KEY"] = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+
 def configure_logging():
     """
     Configure the application's logging settings based on the environment.

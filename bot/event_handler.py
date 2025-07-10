@@ -5,8 +5,10 @@ import re
 from slack_sdk.errors import SlackApiError
 import logging
 from tempfile import NamedTemporaryFile
+from bot.utils import get_s3_presigned_url
 
 from slack_sdk.socket_mode.response import SocketModeResponse
+
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,19 @@ class EventHandler:
 
         # Create cache directory if it doesn't exist
         os.makedirs(self.cache_dir, exist_ok=True)
+
+    def extract_mindmap_request(self, text: str) -> str | None:
+        """
+        Checks if the text contains a request for a mindmap.
+        Returns the S3 file name if a match is found, otherwise returns None.
+        """
+        text = text.lower().strip()
+        mindmap_map = {
+            "leave request procedure": "emumba_leave_policy_mindmap.html",
+            "loan policy": "emumba_loan_policy_mindmap.html",
+            "slack guidelines": "emumba_slack_guidelines_mindmap.html",
+        }
+        return mindmap_map.get(text)
 
     def extract_podcast_topic(self, text: str) -> str | None:
         """
@@ -66,6 +81,16 @@ class EventHandler:
                     print(f"Detected podcast request in free-text: '{text}' → topic: '{topic}'")
                     await self.handle_podcast_command(topic, channel_id)
 
+                mindmap_s3_file = self.extract_mindmap_request(text)
+                if mindmap_s3_file:
+                    print(f"Detected mindmap request in free-text: '{text}' → file: '{mindmap_s3_file}'")
+                    html_url = get_s3_presigned_url(bucket_name=os.getenv("S3_BUCKET_NAME_MINDMAPS"), region="us-west-2", file_name=mindmap_s3_file, expiration=3000)
+                    await client.web_client.chat_postMessage(
+                        channel=event.get("channel"),
+                        text=f"View here: <{html_url}|Link>"
+                    ) 
+
+
     async def handle_podcast_command(self, topic: str, channel_id: str):
         print("handling podcast command")
         file_key = self.find_relevant_audio(topic)
@@ -90,7 +115,7 @@ class EventHandler:
         topic_words = topic_keywords.lower().split()
         best_match = None
 
-        for page in paginator.paginate(Bucket=os.getenv("S3_BUCKET_NAME")):
+        for page in paginator.paginate(Bucket=os.getenv("S3_BUCKET_NAME_PODCASTS")):
             for obj in page.get("Contents", []):
                 key = obj["Key"]
                 if key.endswith(".wav"):
@@ -125,7 +150,7 @@ class EventHandler:
         # Download from S3 (first-time upload)
         s3 = boto3.client("s3")
         try:
-            s3_object = s3.get_object(Bucket=os.getenv("S3_BUCKET_NAME"), Key=file_key)
+            s3_object = s3.get_object(Bucket=os.getenv("S3_BUCKET_NAME_PODCASTS"), Key=file_key)
             audio_data = s3_object["Body"].read()
 
             # Store in local cache
