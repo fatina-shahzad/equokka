@@ -40,6 +40,8 @@ SLACK_APP_TOKEN=xapp-...
 SLACK_BOT_TOKEN=xoxb-...
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+S3_BUCKET_NAME_PODCASTS=
+S3_BUCKET_NAME_MINDMAPS=
 ENV=development  # or production
 ```
 
