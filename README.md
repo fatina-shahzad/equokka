@@ -59,7 +59,16 @@ python main.py
 
 
 (Note: Once the bot is running, you can interact with it in your Slack workspace. 
-Use commands like 'podcast on [topic]' to trigger podcast or '[topic]' to generate infographics, respectively.)
+For podcast generation, you can send a message like follows:
+'podcast on loan policy', 
+'podcast on asset policy', 
+'podcast on gym passport'.
+
+For infographic generation, you can send a message like follows:
+'loan policy',
+'slack guidelines',
+'leave request procedure'
+)
 
 
 
